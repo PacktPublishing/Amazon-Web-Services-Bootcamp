@@ -1,0 +1,85 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CloudFormation template for aws-bootcamp",
+  "Parameters": {
+
+  },
+  "Resources": {
+    "AWSBootcampSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupName" : "aws-bootcamp",
+        "GroupDescription": "Enable access via port 22 and 80",
+        "SecurityGroupIngress": [{
+          "IpProtocol": "tcp",
+          "FromPort": "22",
+          "ToPort": "22",
+          "CidrIp": "0.0.0.0/0"
+        },{
+          "IpProtocol": "tcp",
+          "FromPort": "80",
+          "ToPort": "80",
+          "CidrIp": "0.0.0.0/0"
+        }]
+      }
+    },
+    "EC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "SecurityGroups": [{
+          "Ref": "AWSBootcampSecurityGroup"
+        }],
+        "KeyName": "aws-bootcamp",
+        "ImageId": "ami-c998b6b2",
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "\n", [
+                "#!/bin/bash",
+                "yum install httpd -y",
+                "service httpd start"
+              ]
+            ]
+          }
+        },
+        "Tags": [{
+          "Key": "Name",
+          "Value": "aws-bootcamp"
+        }]
+      }
+    }
+  },
+  "Outputs": {
+    "SecurityGroupId": {
+      "Description": "Security Group Id",
+      "Value": {
+        "Fn::GetAtt": ["AWSBootcampSecurityGroup", "GroupId"]
+      }
+    },
+    "InstanceId": {
+      "Description": "InstanceId of the newly created EC2 instance",
+      "Value": {
+        "Ref": "EC2Instance"
+      }
+    },
+    "AZ": {
+      "Description": "Availability Zone of the newly created EC2 instance",
+      "Value": {
+        "Fn::GetAtt": ["EC2Instance", "AvailabilityZone"]
+      }
+    },
+    "PublicDNS": {
+      "Description": "Public DNSName of the newly created EC2 instance",
+      "Value": {
+        "Fn::GetAtt": ["EC2Instance", "PublicDnsName"]
+      }
+    },
+    "PublicIP": {
+      "Description": "Public IP address of the newly created EC2 instance",
+      "Value": {
+        "Fn::GetAtt": ["EC2Instance", "PublicIp"]
+      }
+    }
+  }
+}

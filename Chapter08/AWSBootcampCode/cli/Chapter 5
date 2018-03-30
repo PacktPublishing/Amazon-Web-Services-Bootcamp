@@ -1,0 +1,62 @@
+aws rds create-db-instance --db-instance-identifier "AWSBootcamp" --db-instance-class "db.t2.micro" --engine "MySQL" --no-multi-az --master-username "awsbootcamp" --master-user-password "abcd12345" --db-name "awsbootcampdb" --storage-type "gp2" --allocated-storage "20" --publicly-accessible --backup-retention-period "0" --vpc-security-group-ids "sg-e4248e91"
+
+--db-instance-identifier
+--db-instance-class
+--engine
+--no-multi-az
+--master-username
+--master-user-password
+--db-name
+--storage-type
+--allocated-storage
+--publicly-accessible
+--backup-retention-period
+--vpc-security-group-ids
+
+--engine <value>
+[--license-model <value>]
+[--engine-version <value>]
+--db-instance-class <value>
+[--multi-az | --no-multi-az]
+[--storage-type <value>]
+[--allocated-storage <value>]
+--db-instance-identifier <value>
+[--master-username <value>]
+[--master-user-password <value>]
+
+[--db-subnet-group-name <value>]
+[--publicly-accessible | --no-publicly-accessible]
+[--availability-zone <value>]
+[--vpc-security-group-ids <value>]
+
+[--db-name <value>]
+[--port <value>]
+[--db-parameter-group-name <value>]
+[--option-group-name <value>]
+[--copy-tags-to-snapshot | --no-copy-tags-to-snapshot]
+[--enable-iam-database-authentication | --no-enable-iam-database-authentication]
+[--storage-encrypted | --no-storage-encrypted]
+
+[--backup-retention-period <value>]
+[--preferred-backup-window <value>]
+
+[--enable-performance-insights | --no-enable-performance-insights]
+
+[--auto-minor-version-upgrade | --no-auto-minor-version-upgrade]
+[--preferred-maintenance-window <value>]
+
+[--db-security-groups <value>]
+[--iops <value>]
+[--character-set-name <value>]
+[--tags <value>]
+[--db-cluster-identifier <value>]
+[--tde-credential-arn <value>]
+[--tde-credential-password <value>]
+[--kms-key-id <value>]
+[--domain <value>]
+[--monitoring-interval <value>]
+[--monitoring-role-arn <value>]
+[--domain-iam-role-name <value>]
+[--promotion-tier <value>]
+[--timezone <value>]
+[--performance-insights-kms-key-id <value>]

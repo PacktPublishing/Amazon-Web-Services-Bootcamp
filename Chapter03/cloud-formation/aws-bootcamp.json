@@ -1,0 +1,405 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CloudFormation template for aws-bootcamp",
+  "Parameters": {
+
+  },
+  "Resources": {
+    "AmazonS3FullAccess": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "ManagedPolicyName": "AmazonS3FullAccess",
+        "Description": "S3 Full Access On my-bucket",
+        "Path": "/",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+              "s3:*"
+            ],
+            "Resource": "arn:aws:s3:::my-bucket"
+          }]
+        }
+      }
+    },
+    "AmazonS3FullAccessRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": ["ec2.amazonaws.com"]
+            },
+            "Action": ["sts:AssumeRole"]
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "S3FullAccessOnMyBucket2",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": [
+                "s3:*"
+              ],
+              "Resource": "arn:aws:s3:::my-bucket-2"
+            }]
+          }
+        }],
+        "ManagedPolicyArns": [{
+          "Ref": "AmazonS3FullAccess"
+        }],
+        "RoleName": "AmazonS3FullAccessRole"
+      }
+    },
+    "RootInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [{
+          "Ref": "AmazonS3FullAccessRole"
+        }],
+        "InstanceProfileName": "RootInstanceProfile"
+      }
+    },
+    "Developer": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "Developer",
+        "ManagedPolicyArns": [{
+          "Ref": "AmazonS3FullAccess"
+        }],
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "S3FullAccessOnMyBucket2",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": [
+                "s3:*"
+              ],
+              "Resource": "arn:aws:s3:::my-bucket-2"
+            }]
+          }
+        }]
+      }
+    },
+    "IAMUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "Groups": [{
+          "Ref": "Developer"
+        }],
+        "LoginProfile": {
+          "Password": "abcd1234",
+          "PasswordResetRequired": true
+        },
+        "ManagedPolicyArns": [{
+          "Ref": "AmazonS3FullAccess"
+        }],
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "S3FullAccessOnMyBucket2",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": [
+                "s3:*"
+              ],
+              "Resource": "arn:aws:s3:::my-bucket-2"
+            }]
+          }
+        }],
+        "UserName": "Sunil"
+      }
+    },
+    "UserCredentials" : {
+      "Type" : "AWS::IAM::AccessKey",
+      "Properties" : {
+        "UserName" : { "Ref" : "IAMUser" }
+      }
+    },
+    "AWSBootcampSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupName" : "aws-bootcamp",
+        "GroupDescription": "Enable access via port 22 and 80",
+        "SecurityGroupIngress": [{
+          "IpProtocol": "tcp",
+          "FromPort": "22",
+          "ToPort": "22",
+          "CidrIp": "0.0.0.0/0"
+        },{
+          "IpProtocol": "tcp",
+          "FromPort": "80",
+          "ToPort": "80",
+          "CidrIp": "0.0.0.0/0"
+        }]
+      }
+    },
+    "EC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "SecurityGroups": [{
+          "Ref": "AWSBootcampSecurityGroup"
+        }],
+        "KeyName": "aws-bootcamp",
+        "ImageId": "ami-c998b6b2",
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "\n", [
+                "#!/bin/bash",
+                "yum install httpd -y",
+                "service httpd start"
+              ]
+            ]
+          }
+        },
+        "Tags": [{
+            "Key": "Name",
+            "Value": "aws-bootcamp"
+        }]
+      }
+    },
+    "ElasticLoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "Tags" :  [
+          {
+            "Key": "Name",
+            "Value": "AWS-Bootcamp"
+          }
+        ],
+        "HealthCheck": {
+          "HealthyThreshold": 2,
+          "Interval": 30,
+          "Target": "TCP:80",
+          "Timeout": 5,
+          "UnhealthyThreshold": 2
+        },
+        "Listeners": [{
+          "InstancePort": 80,
+          "PolicyNames": [],
+          "LoadBalancerPort": 80,
+          "Protocol": "HTTP",
+          "InstanceProtocol": "HTTP"
+        }],
+        "SecurityGroups": [{
+          "Fn::GetAtt": ["AWSBootcampSecurityGroup", "GroupId"]
+        }],
+        "ConnectionSettings": {
+          "IdleTimeout": 600
+        },
+        "Scheme": "internet-facing",
+        "AvailabilityZones": [
+          "us-east-1d"
+        ],
+        "Instances" : [{
+          "Ref" : "EC2Instance"
+        }]
+      }
+    },
+    "LaunchConfiguration": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "\n",
+              [
+                "#!/bin/bash",
+                "yum install httpd -y",
+                "service httpd start"
+              ]
+            ]
+          }
+        },
+        "ImageId": "ami-c998b6b2",
+        "KeyName": "aws-bootcamp",
+        "SecurityGroups": [
+          {
+            "Ref": "AWSBootcampSecurityGroup"
+          }
+        ],
+        "IamInstanceProfile": {
+          "Ref": "RootInstanceProfile"
+        },
+        "InstanceType": "t2.micro"
+      }
+    },
+    "AutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "LoadBalancerNames": [{
+          "Ref": "ElasticLoadBalancer"
+        }],
+        "MinSize": "2",
+        "LaunchConfigurationName": {
+          "Ref": "LaunchConfiguration"
+        },
+        "AvailabilityZones": [{
+          "Fn::Select": [
+            0, {
+              "Fn::GetAZs": {
+                "Ref": "AWS::Region"
+              }
+            }
+          ]
+        }, {
+          "Fn::Select": [
+            1, {
+              "Fn::GetAZs": {
+                "Ref": "AWS::Region"
+              }
+            }
+          ]
+        }],
+        "DesiredCapacity": "2",
+        "Tags" :  [
+          {
+            "Key": "Name",
+            "Value": "aws-bootcamp",
+            "PropagateAtLaunch": true
+          }
+        ],
+        "MaxSize": "4",
+        "TerminationPolicies": [
+          "OldestInstance"
+        ],
+        "HealthCheckGracePeriod": "600",
+        "HealthCheckType": "EC2"
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "PauseTime": "PT1M",
+          "MaxBatchSize": 1,
+          "MinInstancesInService": 2
+        }
+      }
+    },
+    "ScaleUpPolicy": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "ScalingAdjustment": "1",
+        "Cooldown": 300,
+        "AutoScalingGroupName": {
+          "Ref": "AutoScalingGroup"
+        },
+        "AdjustmentType": "ChangeInCapacity"
+      }
+    },
+    "CPUAlarmHigh": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "EvaluationPeriods": 2,
+        "Dimensions": [{
+          "Name": "AutoScalingGroupName",
+          "Value": {
+            "Ref": "AutoScalingGroup"
+          }
+        }],
+        "AlarmActions": [{
+          "Ref": "ScaleUpPolicy"
+        }],
+        "AlarmDescription": "High CPU Utilization",
+        "Namespace": "AWS/EC2",
+        "Period": 300,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Statistic": "Average",
+        "Threshold": "80",
+        "Unit": "Percent",
+        "MetricName": "CPUUtilization"
+      }
+    },
+    "ScaleDownPolicy": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "ScalingAdjustment": "-1",
+        "Cooldown": 300,
+        "AutoScalingGroupName": {
+          "Ref": "AutoScalingGroup"
+        },
+        "AdjustmentType": "ChangeInCapacity"
+      }
+    },
+    "CPUAlarmLow": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "EvaluationPeriods": 2,
+        "Dimensions": [{
+          "Name": "AutoScalingGroupName",
+          "Value": {
+            "Ref": "AutoScalingGroup"
+          }
+        }],
+        "AlarmActions": [{
+          "Ref": "ScaleDownPolicy"
+        }],
+        "AlarmDescription": "Low CPU Utilization",
+        "Namespace": "AWS/EC2",
+        "Period": 300,
+        "ComparisonOperator": "LessThanOrEqualToThreshold",
+        "Statistic": "Average",
+        "Threshold": "40",
+        "Unit": "Percent",
+        "MetricName": "CPUUtilization"
+      }
+    }
+  },
+  "Outputs": {
+    "AccessKey" : {
+      "Description": "Access Key ID",
+      "Value" : { "Ref" : "UserCredentials" }
+    },
+    "SecretKey" : {
+      "Description": "Secret Key",
+      "Value" : {
+        "Fn::GetAtt" : [ "UserCredentials", "SecretAccessKey" ]
+      }
+    },
+    "SecurityGroupId": {
+      "Description": "Security Group Id",
+      "Value": {
+        "Fn::GetAtt": ["AWSBootcampSecurityGroup", "GroupId"]
+      }
+    },
+    "InstanceId": {
+      "Description": "InstanceId of the newly created EC2 instance",
+      "Value": {
+        "Ref": "EC2Instance"
+      }
+    },
+    "AZ": {
+      "Description": "Availability Zone of the newly created EC2 instance",
+      "Value": {
+        "Fn::GetAtt": ["EC2Instance", "AvailabilityZone"]
+      }
+    },
+    "PublicDNS": {
+      "Description": "Public DNSName of the newly created EC2 instance",
+      "Value": {
+        "Fn::GetAtt": ["EC2Instance", "PublicDnsName"]
+      }
+    },
+    "PublicIP": {
+      "Description": "Public IP address of the newly created EC2 instance",
+      "Value": {
+        "Fn::GetAtt": ["EC2Instance", "PublicIp"]
+      }
+    },
+    "ELBDNSName": {
+      "Description": "ELB DNS Name",
+      "Value": {
+        "Fn::GetAtt" : [ "ElasticLoadBalancer" , "DNSName" ]
+      }
+    }
+  }
+}

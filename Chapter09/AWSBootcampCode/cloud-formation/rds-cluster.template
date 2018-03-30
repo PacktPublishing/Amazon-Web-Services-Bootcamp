@@ -1,0 +1,164 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Create RDS Stack",
+  "Parameters": {
+    "DBName": {
+      "Default": "awsbootcampdb",
+      "Description": "Database Name",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern": "[a-z][a-z0-9]*",
+      "ConstraintDescription": "must begin with a letter and can contain only alphanumeric with length upto 64."
+    },
+    "DBUser": {
+      "Default": "awsbootcamp",
+      "Description": "Database User",
+      "Type": "String"
+    },
+    "DBPassword": {
+      "Default": "abcd12345",
+      "Description": "Database Password",
+      "Type": "String"
+    },
+    "DBInstanceClass": {
+      "Default": "db.t2.small",
+      "Description": "Database Instance Class",
+      "Type": "String",
+      "AllowedValues": [
+        "db.t2.small",
+        "db.t2.medium",
+        "db.r3.large",
+        "db.r3.xlarge",
+        "db.r3.2xlarge",
+        "db.r3.4xlarge",
+        "db.r3.8xlarge"
+      ]
+    },
+    "SSHAccessLocation": {
+      "Default": "0.0.0.0/0",
+      "Description": "SSH Access IP Location",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+    }
+  },
+  "Resources": {
+    "VPCSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable SSH access via port 22 and database port 3306",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3306",
+            "ToPort": "3306",
+            "CidrIp": {
+              "Ref": "SSHAccessLocation"
+            }
+          }
+        ]
+      }
+    },
+    "DBCluster" : {
+      "Type": "AWS::RDS::DBCluster",
+      "Properties": {
+        "Engine": "aurora",
+        "MasterUsername": {
+          "Ref": "DBUser"
+        },
+        "MasterUserPassword": {
+          "Ref": "DBPassword"
+        },
+        "DatabaseName": {
+          "Ref": "DBName"
+        },
+        "VpcSecurityGroupIds": [
+          {
+            "Fn::GetAtt":[
+              "VPCSecurityGroup",
+              "GroupId"
+            ]
+          }
+        ]
+      },
+      "DependsOn": "VPCSecurityGroup"
+    },
+    "DBInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "Engine": "aurora",
+        "DBClusterIdentifier": {
+          "Ref": "DBCluster"
+        },
+        "DBInstanceClass": {
+          "Ref": "DBInstanceClass"
+        },
+        "DBInstanceIdentifier": {
+          "Ref": "DBName"
+        },
+        "PubliclyAccessible": true
+      },
+      "DependsOn": "DBCluster"
+    }
+  },
+  "Outputs": {
+    "Instance": {
+      "Description": "JDBC connection string for the database",
+      "Value": {
+        "Fn::Join":[
+          "",[
+            "jdbc::mysql://",
+            {
+              "Fn::GetAtt": [
+                "DBInstance",
+                "Endpoint.Address"
+              ]
+            },
+            ":",
+            {
+              "Fn::GetAtt": [
+                "DBInstance",
+                "Endpoint.Port"
+              ]
+            },
+            "/",
+            {
+              "Ref": "DBName"
+            }
+          ]
+        ]
+      }
+    },
+    "Cluster": {
+      "Description": "Cluster JDBC Connection String for the database",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "jdbc:mysql://",
+            {
+              "Fn::GetAtt": [
+                "DBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            ":",
+            {
+              "Fn::GetAtt": [
+                "DBCluster",
+                "Endpoint.Port"
+              ]
+            },
+            "/",
+            {
+              "Ref": "DBName"
+            }
+          ]
+        ]
+      }
+    }
+  }
+}

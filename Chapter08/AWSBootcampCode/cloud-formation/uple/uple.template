@@ -1,0 +1,263 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Create Uple Stack",
+
+  "Parameters": {
+    "ProjectName": {
+      "Type": "String",
+      "Description": "Project Name",
+      "Default": "UpleAPI"
+    },
+    "S3StackURL": {
+      "Type": "String",
+      "Description": "S3 Stack URL",
+      "Default": "uple-s3.template"
+    },
+    "RDSStackURL": {
+      "Type": "String",
+      "Description": "RDS Stack URL",
+      "Default": "uple-rds.template"
+    },
+    "ElasticBeanstalkStackURL": {
+      "Type": "String",
+      "Description": "Elastic Beanstalk Stack URL",
+      "Default": "uple-elastic-beanstalk.template"
+    }
+  },
+
+  "Resources": {
+    "S3StackForProd": {
+      "Type" : "AWS::CloudFormation::Stack",
+      "Properties" : {
+        "Parameters" : {
+          "ProjectName" : {
+            "Type" : "String",
+            "Default" : {
+              "Ref": "ProjectName"
+            },
+            "Description" : "Project Name"
+          }
+        },
+        "TemplateURL" : {
+          "Ref": "S3StackURL"
+        },
+        "Tags" : [
+          {
+            "Key": "Project Name",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          }
+        ]
+      }
+    },
+    "RDSStackForDev": {
+      "Type" : "AWS::CloudFormation::Stack",
+      "Properties" : {
+        "Parameters" : {
+          "ProjectName" : {
+            "Type" : "String",
+            "Default" : {
+              "Ref": "ProjectName"
+            },
+            "Description" : "Project Name"
+          },
+          "EnvironmentName": {
+            "Type": "String",
+            "Description": "Environment Name",
+            "Default": "dev"
+          },
+          "DBInstanceClass": {
+            "Type": "String",
+            "Description": "Database Instance Class",
+            "Default": "db.t2.small"
+          }
+        },
+        "TemplateURL" : {
+          "Ref": "RDSStackURL"
+        },
+        "Tags" : [
+          {
+            "Key": "Project Name",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          }
+        ]
+      }
+    },
+    "RDSStackForProd": {
+      "Type" : "AWS::CloudFormation::Stack",
+      "Properties" : {
+        "Parameters" : {
+          "ProjectName" : {
+            "Type" : "String",
+            "Default" : {
+              "Ref": "ProjectName"
+            },
+            "Description" : "Project Name"
+          },
+          "EnvironmentName": {
+            "Type": "String",
+            "Description": "Environment Name",
+            "Default": "prod"
+          },
+          "DBInstanceClass": {
+            "Type": "String",
+            "Description": "Database Instance Class",
+            "Default": "db.r3.large"
+          }
+        },
+        "TemplateURL" : {
+          "Ref": "RDSStackURL"
+        },
+        "Tags" : [
+          {
+            "Key": "Project Name",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          }
+        ]
+      }
+    },
+    "ElasticBeanstalkStackForDev": {
+      "Type" : "AWS::CloudFormation::Stack",
+      "Properties" : {
+        "Parameters" : {
+          "ProjectName" : {
+            "Type" : "String",
+            "Default" : {
+              "Ref": "ProjectName"
+            },
+            "Description" : "Project Name"
+          },
+          "EnvironmentName": {
+            "Type": "String",
+            "Description": "Environment Name",
+            "Default": "dev"
+          },
+          "S3BucketNameOfApp": {
+            "Type": "String",
+            "Description": "S3 Bucket Name Of App",
+            "Default": "elasticbeanstalk-us-west-2-231725917657"
+          },
+          "S3KeyOfApp": {
+            "Type": "String",
+            "Description": "S3 Key Of App",
+            "Default": "MySkoolDev/MySkoolDevAPI-env/20180112135919-bitbucket_builds.zip"
+          },
+          "InstanceMinSize": {
+            "Type": "Number",
+            "Description": "Minimum EB Instance Size",
+            "Default": 1
+          },
+          "InstanceMaxSize": {
+            "Type": "Number",
+            "Description": "Maximum EB Instance Size",
+            "Default": 2
+          },
+          "InstanceType": {
+            "Type": "String",
+            "Description": "EC2 Instance Type to be used by Elastic Beanstalk",
+            "Default": "t2.small"
+          },
+          "AppHealthCheckURL": {
+            "Type": "String",
+            "Description": "App Health Check URL",
+            "Default": "/country"
+          },
+          "SpringProfilesActive": {
+            "Type": "String",
+            "Description": "Spring Profiles Active",
+            "Default": "devaurora"
+          }
+        },
+        "TemplateURL" : {
+          "Ref": "ElasticBeanstalkStackURL"
+        },
+        "Tags" : [
+          {
+            "Key": "Project Name",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          },
+          {
+            "Key": "Environment Name",
+            "Value": "Development"
+          }
+        ]
+      }
+    },
+    "ElasticBeanstalkStackForProd": {
+      "Type" : "AWS::CloudFormation::Stack",
+      "Properties" : {
+        "Parameters" : {
+          "ProjectName" : {
+            "Type" : "String",
+            "Default" : {
+              "Ref": "ProjectName"
+            },
+            "Description" : "Project Name"
+          },
+          "EnvironmentName": {
+            "Type": "String",
+            "Description": "Environment Name",
+            "Default": "prod"
+          },
+          "S3BucketNameOfApp": {
+            "Type": "String",
+            "Description": "S3 Bucket Name Of App",
+            "Default": "elasticbeanstalk-us-west-2-231725917657"
+          },
+          "S3KeyOfApp": {
+            "Type": "String",
+            "Description": "S3 Key Of App",
+            "Default": "MySkoolDev/MySkoolDevAPI-env/20180112135919-bitbucket_builds.zip"
+          },
+          "InstanceMinSize": {
+            "Type": "Number",
+            "Description": "Minimum EB Instance Size",
+            "Default": 1
+          },
+          "InstanceMaxSize": {
+            "Type": "Number",
+            "Description": "Maximum EB Instance Size",
+            "Default": 4
+          },
+          "InstanceType": {
+            "Type": "String",
+            "Description": "EC2 Instance Type to be used by Elastic Beanstalk",
+            "Default": "t2.medium"
+          },
+          "AppHealthCheckURL": {
+            "Type": "String",
+            "Description": "App Health Check URL",
+            "Default": "/country"
+          },
+          "SpringProfilesActive": {
+            "Type": "String",
+            "Description": "Spring Profiles Active",
+            "Default": "prodaurora"
+          }
+        },
+        "TemplateURL" : {
+          "Ref": "ElasticBeanstalkStackURL"
+        },
+        "Tags" : [
+          {
+            "Key": "Project Name",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          },
+          {
+            "Key": "Environment Name",
+            "Value": "Production"
+          }
+        ]
+      }
+    }
+  }
+}

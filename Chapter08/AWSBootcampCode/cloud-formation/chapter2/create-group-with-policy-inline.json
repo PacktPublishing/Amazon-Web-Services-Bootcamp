@@ -1,0 +1,31 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CloudFormation template for creating policy",
+  "Parameters": {
+
+  },
+  "Resources": {
+    "S3MyBucketUserGroup": {
+      "Type": "AWS::IAM::Group"
+    },
+    "S3FullAccessOnMyBucket": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "S3FullAccessOnMyBucket",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+              "s3:*"
+            ],
+            "Resource": "arn:aws:s3:::my-bucket"
+          }]
+        },
+        "Groups": [{
+          "Ref": "S3MyBucketUserGroup"
+        }]
+      }
+    }
+  }
+}

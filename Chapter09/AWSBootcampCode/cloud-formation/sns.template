@@ -1,0 +1,32 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "SNS Topic for AWS Bootcamp",
+
+  "Resources" : {
+    "AWSBootcamp": {
+      "Type" : "AWS::SNS::Topic",
+      "Properties" : {
+        "TopicName" : "aws-bootcamp",
+        "DisplayName" : "bootcamp",
+        "Subscription" : [
+          {
+            "Endpoint" : "sunil.gulabani2@gmail.com",
+            "Protocol" : "email"
+          }
+        ]
+      }
+    },
+    "EmailSubscription": {
+      "Type" : "AWS::SNS::Subscription",
+      "Properties" : {
+        "Endpoint" : "sunil.gulabani1@gmail.com",
+        "Protocol" : "email",
+        "TopicArn" : "arn:aws:sns:us-east-1:993735536778:aws-bootcamp"
+      },
+      "DependsOn": [
+        "AWSBootcamp"
+      ]
+    }
+  }
+}

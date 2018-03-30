@@ -1,0 +1,36 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Create DynamoDB Stack",
+  "Resources": {
+    "AWSBootcampDDB": {
+      "Type" : "AWS::DynamoDB::Table",
+      "Properties" : {
+        "TableName" : "awsbootcamp",
+        "AttributeDefinitions" : [
+          {
+            "AttributeName": "id",
+            "AttributeType": "N"
+          },
+          {
+            "AttributeName": "name",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema" : [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "name",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput" : {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        }
+      }
+    }
+  }
+}

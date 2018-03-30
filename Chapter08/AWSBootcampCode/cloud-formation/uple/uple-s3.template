@@ -1,0 +1,194 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "S3 Stack for Uple",
+
+  "Parameters": {
+    "ProjectName": {
+      "Type": "String",
+      "Description": "Project Name",
+      "Default": "uple-dev",
+      "MinLength": "3",
+      "MaxLength": "15"
+    },
+    "UpleCoHostedZoneId": {
+      "Type": "String",
+      "Description": "Hosted Zone Id of uple.co",
+      "Default": "Z2AEP8PQ0EOU8P"
+    },
+    "UpleIoHostedZoneId": {
+      "Type": "String",
+      "Description": "Hosted Zone Id of uple.io",
+      "Default": "Z3LUECOW21KEDM"
+    },
+    "S3WebsiteDNSForRoute53": {
+      "Type": "String",
+      "Description": "DNS Name for S3 Website for us-west-2 (Oregon)",
+      "Default": "s3-website-us-west-2.amazonaws.com."
+    },
+    "S3USWest2HostedZoneId": {
+      "Type": "String",
+      "Description": "Hosted Zone Id of S3 us-west-2",
+      "Default": "Z3BJ6K6RIION7M"
+    }
+  },
+
+  "Resources" : {
+    "UpleCoBucket": {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+        "AccessControl" : "PublicRead",
+        "BucketName" : "uple.co",
+        "Tags" : [
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          }
+        ],
+        "WebsiteConfiguration" : {
+          "IndexDocument" : "index.html",
+          "ErrorDocument" : "error.html"
+        }
+      }
+    },
+    "WwwUpleCoBucket": {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+        "AccessControl" : "PublicRead",
+        "BucketName" : "www.uple.co",
+        "Tags" : [
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          }
+        ],
+        "WebsiteConfiguration" : {
+          "IndexDocument" : "index.html",
+          "ErrorDocument" : "error.html"
+        }
+      }
+    },
+    "UpleioBucket": {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+        "AccessControl" : "PublicRead",
+        "BucketName" : "uple.io",
+        "Tags" : [
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          }
+        ],
+        "WebsiteConfiguration" : {
+          "IndexDocument" : "index.html",
+          "ErrorDocument" : "error.html"
+        }
+      }
+    },
+    "WwwUpleioBucket": {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+        "AccessControl" : "PublicRead",
+        "BucketName" : "www.uple.io",
+        "Tags" : [
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          }
+        ],
+        "WebsiteConfiguration" : {
+          "IndexDocument" : "index.html",
+          "ErrorDocument" : "error.html"
+        }
+      }
+    },
+    "UpleIoRoute53": {
+      "Type" : "AWS::Route53::RecordSet",
+      "Properties" : {
+        "HostedZoneId" : {
+          "Ref": "UpleIoHostedZoneId"
+        },
+        "Name" : "uple.io",
+        "Type" : "A",
+        "AliasTarget" : {
+          "DNSName" : {
+            "Ref": "S3WebsiteDNSForRoute53"
+          },
+          "EvaluateTargetHealth" : false,
+          "HostedZoneId" : {
+            "Ref": "S3USWest2HostedZoneId"
+          }
+        },
+        "Comment" : "Route 53 to S3"
+      }
+    },
+    "WwwUpleIoRoute53": {
+      "Type" : "AWS::Route53::RecordSet",
+      "Properties" : {
+        "HostedZoneId" : {
+          "Ref": "UpleIoHostedZoneId"
+        },
+        "Name" : "www.uple.io",
+        "Type" : "A",
+        "AliasTarget" : {
+          "DNSName" : {
+            "Ref": "S3WebsiteDNSForRoute53"
+          },
+          "EvaluateTargetHealth" : false,
+          "HostedZoneId" : {
+            "Ref": "S3USWest2HostedZoneId"
+          }
+        },
+        "Comment" : "Route 53 to S3"
+      }
+    },
+    "UpleCoRoute53": {
+      "Type" : "AWS::Route53::RecordSet",
+      "Properties" : {
+        "HostedZoneId" : {
+          "Ref": "UpleCoHostedZoneId"
+        },
+        "Name" : "uple.co",
+        "Type" : "A",
+        "AliasTarget" : {
+          "DNSName" : {
+            "Ref": "S3WebsiteDNSForRoute53"
+          },
+          "EvaluateTargetHealth" : false,
+          "HostedZoneId" : {
+            "Ref": "S3USWest2HostedZoneId"
+          }
+        },
+        "Comment" : "Route 53 to S3"
+      }
+    },
+    "WwwUpleCoRoute53": {
+      "Type" : "AWS::Route53::RecordSet",
+      "Properties" : {
+        "HostedZoneId" : {
+          "Ref": "UpleCoHostedZoneId"
+        },
+        "Name" : "www.uple.co",
+        "Type" : "A",
+        "AliasTarget" : {
+          "DNSName" : {
+            "Ref": "S3WebsiteDNSForRoute53"
+          },
+          "EvaluateTargetHealth" : false,
+          "HostedZoneId" : {
+            "Ref": "S3USWest2HostedZoneId"
+          }
+        },
+        "Comment" : "Route 53 to S3"
+      }
+    }
+  }
+}

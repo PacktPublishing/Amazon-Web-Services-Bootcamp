@@ -1,0 +1,153 @@
+aws elasticache create-cache-cluster --cache-cluster-id "aws-bootcamp" --port "11211" --engine "memcached" --engine-version "1.4.34" --cache-node-type "cache.t2.micro" --num-cache-nodes 2 --az-mode "single-az" --security-group-ids "sg-2e5a905a"
+
+aws elasticache create-cache-cluster --cache-cluster-id "aws-bootcamp-redis" --port "6379" --engine "redis" --engine-version "3.2.10" --cache-node-type "cache.t2.micro" --num-cache-nodes 1 --az-mode "single-az" --security-group-ids "sg-2e5a905a"
+
+[--replication-group-id <value>]
+[--preferred-availability-zone <value>]
+[--preferred-availability-zones <value>]
+[--cache-parameter-group-name <value>]
+[--cache-subnet-group-name <value>]
+[--cache-security-group-names <value>]
+[--tags <value>]
+[--snapshot-arns <value>]
+[--snapshot-name <value>]
+[--preferred-maintenance-window <value>]
+[--notification-topic-arn <value>]
+[--auto-minor-version-upgrade | --no-auto-minor-version-upgrade]
+[--snapshot-retention-limit <value>]
+[--snapshot-window <value>]
+[--auth-token <value>]
+--------------------------------------------------------
+
+aws elasticache create-replication-group --replication-group-id "aws-bootcamp-redis-1" --replication-group-description "AWS Bootcamp redis cluster disabled" --num-cache-clusters 3 --engine "redis" --engine-version "3.2.10" --port 6379 --cache-parameter-group-name "default.redis3.2" --cache-node-type "cache.t2.micro" --cache-subnet-group-name "default" --security-group-ids "sg-2e5a905a"
+
+aws elasticache create-replication-group --replication-group-id "aws-bootcamp-redis-2" --replication-group-description "AWS Bootcamp redis cluster enabled" --engine "redis" --engine-version "3.2.10" --port 6379 --cache-parameter-group-name "default.redis3.2.cluster.on" --cache-node-type "cache.t2.micro" --num-node-groups 2 --replicas-per-node-group 2 --cache-subnet-group-name "default" --security-group-ids "sg-2e5a905a"
+
+--cache-security-group-names
+[--primary-cluster-id <value>]
+[--automatic-failover-enabled | --no-automatic-failover-enabled]
+[--num-cache-clusters <value>]
+[--preferred-cache-cluster-a-zs <value>]
+[--num-node-groups <value>]
+[--node-group-configuration <value>]
+[--tags <value>]
+[--snapshot-arns <value>]
+[--snapshot-name <value>]
+[--preferred-maintenance-window <value>]
+[--notification-topic-arn <value>]
+[--auto-minor-version-upgrade | --no-auto-minor-version-upgrade]
+[--snapshot-retention-limit <value>]
+[--snapshot-window <value>]
+[--auth-token <value>]
+[--transit-encryption-enabled | --no-transit-encryption-enabled]
+[--at-rest-encryption-enabled | --no-at-rest-encryption-enabled]
+
+-----
+--replication-group-id
+false
+Replication group identifier
+
+--replication-group-description
+false
+Friendly description for your replication group
+
+[--primary-cluster-id <value>]
+Defines the primary cluster identifier if already created. If "--num-cache-clusters", "--num-node-groups", or "--replicas-per-node-group" option are provided, then "--primary-cluster-id" option is not required.
+
+[--automatic-failover-enabled | --no-automatic-failover-enabled]
+If primary fails, any of read replica can automatically become primary
+
+[--num-cache-clusters <value>]
+Defines the number of clusters it will have. This option can't be used when we have more than one node group. We can provide number of cache cluster value between 1 to 6 which includes 1 primary and 5 replicas. If we need automatic failover enabled, we need to set the value greater than or equal to 2 and if automatic failover is disabled we can ignore this option or set value to 1.
+
+[--preferred-cache-cluster-a-zs <value>]
+Defines in which availability zone your cluster will be created. First preferred availability zone will be used for primary and in same order clusters will be created in availability zone. Also if we are creating cluster under Amazon VPC, only those availability zone should be provided which are part in Subnet Group. When we create more than one node group this option can't be used, instead we can use "--node-group-configuration". Format for providing values is:
+
+"us-east-1a" "us-east-1b" "us-west-2"
+
+[--num-node-groups <value>]
+Defines the number of node groups (shards). This option is useful when we want to create cluster mode enabled Redis. We can also use this option with cluster mode disabled but value should be 1.
+
+[--replicas-per-node-group <value>]
+Defines the number of replicas to be created per node group (shard). Value can be between 0 and 5.
+
+[--node-group-configuration <value>]
+Defines the node group (shard) configuration which includes Slots, Primary Availability Zone, Replica Availability Zones, and Replica Count. Format for providing values is:
+
+"Slots=0-8999,PrimaryAvailabilityZone='us-east-1a',ReplicaAvailabilityZones='us-east-1b','us-east-1c',ReplicaCount=2"
+"Slots=9000-16383,PrimaryAvailabilityZone='us-east-1a',ReplicaAvailabilityZones='us-east-1a','us-east-1b','us-east-1c',ReplicaCount=3"
+
+We can also provide value in JSON format as:
+
+[
+  {
+    "Slots": "0-8999",
+    "ReplicaCount": 2,
+    "PrimaryAvailabilityZone": "us-east-1a",
+    "ReplicaAvailabilityZones": ["us-east-1b", "us-east-1c"]
+  },
+  {
+    "Slots": "9000-16383",
+    "ReplicaCount": 3,
+    "PrimaryAvailabilityZone": "us-east-1a",
+    "ReplicaAvailabilityZones": ["us-east-1a","us-east-1b", "us-east-1c"]
+  }
+]
+
+Slots value has to be key space and we need to split key space between multiple node groups (shards). Key spaces can be split into 16384 slots.
+
+[--cache-node-type <value>]
+Defines the compute and memory capacity of the nodes in the node group (shard)
+
+[--engine <value>]
+Defines the name of the cache engine.
+
+[--engine-version <value>]
+Defines the version number of cache engine.
+
+[--cache-parameter-group-name <value>]
+Defines the parameter group name which defines configurations (or properties) of the cache
+
+[--cache-subnet-group-name <value>]
+Defines the subnet group name in which replication group will be created
+
+[--cache-security-group-names <value>]
+Defines the security group name that will be associated with replication group
+
+[--security-group-ids <value>]
+Defines the VPC security group ids that will be associated with replication group.
+
+[--tags <value>]
+Defines the cost allocation tags to be attached to replication group
+
+[--snapshot-arns <value>]
+Defines the list of Redis RDB files S3 ARNs, using which replication group will be populated.
+
+[--snapshot-name <value>]
+Defines the snapshot name which will be used to restore data to new replication group
+
+[--preferred-maintenance-window <value>]
+
+
+[--port <value>]
+
+
+[--notification-topic-arn <value>]
+
+
+[--auto-minor-version-upgrade | --no-auto-minor-version-upgrade]
+
+
+[--snapshot-retention-limit <value>]
+
+
+[--snapshot-window <value>]
+
+
+[--auth-token <value>]
+
+
+[--transit-encryption-enabled | --no-transit-encryption-enabled]
+
+
+[--at-rest-encryption-enabled | --no-at-rest-encryption-enabled]

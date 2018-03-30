@@ -1,0 +1,12 @@
+aws sns create-topic --name "aws-bootcamp"
+
+
+aws sns subscribe --topic-arn "arn:aws:sns:us-east-1:993735536778:aws-bootcamp" --protocol "email" --notification-endpoint "sunil.gulabani1@gmail.com"
+
+
+aws sns publish --topic-arn "arn:aws:sns:us-east-1:993735536778:aws-bootcamp" --subject "AWS Bootcamp Notification" --message "Hello, \n\nThis is test notification from SNS!"
+
+[--target-arn <value>]
+[--phone-number <value>]
+[--message-structure <value>]
+[--message-attributes <value>]

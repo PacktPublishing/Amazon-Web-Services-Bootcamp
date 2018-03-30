@@ -1,0 +1,83 @@
+http://docs.aws.amazon.com/cli/latest/reference/s3api/
+
+aws s3api create-bucket --bucket "aws-bootcamp-packt-1" --create-bucket-configuration LocationConstraint=ap-south-1
+
+--bucket <value>
+[--acl <value>]
+[--create-bucket-configuration <value>]
+[--grant-full-control <value>]
+[--grant-read <value>]
+[--grant-read-acp <value>]
+[--grant-write <value>]
+[--grant-write-acp <value>]
+
+
+aws s3api wait bucket-exists --bucket "aws-bootcamp-packt"
+
+----------------------------------------------------------------------------------------
+aws s3api put-object --bucket "aws-bootcamp-packt" --key "PACKT/"
+
+aws s3api put-object --bucket "aws-bootcamp-packt" --key "PACKT/index.html" --body index.html --tagging Chapter=4
+
+put-object
+--bucket <value>
+--key <value>
+[--acl <value>]
+[--body <value>]
+[--cache-control <value>]
+[--content-disposition <value>]
+[--content-encoding <value>]
+[--content-language <value>]
+[--content-length <value>]
+[--content-md5 <value>]
+[--content-type <value>]
+[--expires <value>]
+[--grant-full-control <value>]
+[--grant-read <value>]
+[--grant-read-acp <value>]
+[--grant-write-acp <value>]
+[--metadata <value>]
+[--server-side-encryption <value>]
+[--storage-class <value>]
+[--website-redirect-location <value>]
+[--sse-customer-algorithm <value>]
+[--sse-customer-key <value>]
+[--sse-customer-key-md5 <value>]
+[--ssekms-key-id <value>]
+[--request-payer <value>]
+[--tagging <value>]
+
+----------------------------------------------------------------------------------------
+aws s3api get-object --bucket "aws-bootcamp-packt" --key "PACKT/index.html" "packt-index.html"
+
+ get-object
+--bucket <value>
+--key <value>
+[--if-match <value>]
+[--if-modified-since <value>]
+[--if-none-match <value>]
+[--if-unmodified-since <value>]
+[--range <value>]
+[--response-cache-control <value>]
+[--response-content-disposition <value>]
+[--response-content-encoding <value>]
+[--response-content-language <value>]
+[--response-content-type <value>]
+[--response-expires <value>]
+[--version-id <value>]
+[--sse-customer-algorithm <value>]
+[--sse-customer-key <value>]
+[--sse-customer-key-md5 <value>]
+[--request-payer <value>]
+[--part-number <value>]
+outfile <value>
+----------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------

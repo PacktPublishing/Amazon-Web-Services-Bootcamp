@@ -1,0 +1,65 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Create RDS Stack",
+  "Resources": {
+    "AWSBootcampDBVPCSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable MySQL Database Port 3306",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3306",
+            "ToPort": "3306",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "AWSBootcampDBInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBInstanceClass": "db.t2.micro",
+        "DBInstanceIdentifier": "awsbootcamp",
+        "Engine": "MySQL",
+        "MultiAZ": false,
+        "MasterUsername" : "awsbootcamp",
+        "MasterUserPassword" : "abcd12345",
+        "DBName": "awsbootcampdb",
+        "StorageType" : "gp2",
+        "AllocatedStorage" : "20",
+        "PubliclyAccessible": true,
+        "BackupRetentionPeriod": "0",
+        "VPCSecurityGroups" : [
+          "sg-e4248e91"
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "Instance": {
+      "Description": "JDBC connection string for the database",
+      "Value": {
+        "Fn::Join":[
+          "",[
+            "jdbc::mysql://",
+            {
+              "Fn::GetAtt": [
+                "AWSBootcampDBInstance",
+                "Endpoint.Address"
+              ]
+            },
+            ":",
+            {
+              "Fn::GetAtt": [
+                "AWSBootcampDBInstance",
+                "Endpoint.Port"
+              ]
+            },
+            "/awsbootcampdb"
+          ]
+        ]
+      }
+    }
+  }
+}

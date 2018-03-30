@@ -1,0 +1,182 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "Elastic Beanstalk for Uple",
+
+  "Parameters": {
+    "ProjectName": {
+      "Type": "String",
+      "Description": "Project Name",
+      "Default": "uple",
+      "MinLength": "3",
+      "MaxLength": "15"
+    },
+    "EnvironmentName": {
+      "Type": "String",
+      "Description": "Environment Name",
+      "Default": "dev"
+    },
+    "S3BucketNameOfApp": {
+      "Type": "String",
+      "Description": "S3 Bucket Name Of App",
+      "Default": "elasticbeanstalk-us-west-2-231725917657"
+    },
+    "S3KeyOfApp": {
+      "Type": "String",
+      "Description": "S3 Key Of App",
+      "Default": "MySkoolDev/MySkoolDevAPI-env/20180112135919-bitbucket_builds.zip"
+    },
+    "InstanceMinSize": {
+      "Type": "Number",
+      "Description": "Minimum EB Instance Size",
+      "Default": 1
+    },
+    "InstanceMaxSize": {
+      "Type": "Number",
+      "Description": "Maximum EB Instance Size",
+      "Default": 4
+    },
+    "InstanceType": {
+      "Type": "String",
+      "Description": "EC2 Instance Type to be used by Elastic Beanstalk",
+      "Default": "t2.small"
+    },
+    "EC2KeyName": {
+      "Type": "String",
+      "Description": "EC2 Key Pair Name to be used by Elastic Beanstalk",
+      "Default": "uple-elastic-beanstalk"
+    },
+    "AppHealthCheckURL": {
+      "Type": "String",
+      "Description": "App Health Check URL",
+      "Default": "/country"
+    },
+    "SpringProfilesActive": {
+      "Type": "String",
+      "Description": "Spring Profiles Active",
+      "Default": "devaurora"
+    }
+  },
+
+  "Resources" : {
+    "EBApplication": {
+      "Type": "AWS::ElasticBeanstalk::Application",
+      "Properties": {
+        "ApplicationName" : {
+          "Ref": "ProjectName"
+        },
+        "Description": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "ProjectName"
+              },
+              "App"
+            ]
+          ]
+        }
+      }
+    },
+    "EBApplicationVersion": {
+      "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "EBApplication"
+        },
+        "SourceBundle": {
+          "S3Bucket": {
+            "Ref": "S3BucketNameOfApp"
+          },
+          "S3Key": {
+            "Ref": "S3KeyOfApp"
+          }
+        }
+      }
+    },
+    "EBConfigurationTemplate": {
+      "Type": "AWS::ElasticBeanstalk::ConfigurationTemplate",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "EBApplication"
+        },
+        "Description": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "ProjectName"
+              },
+              " Configuration Template"
+            ]
+          ]
+        },
+        "SolutionStackName": "64bit Amazon Linux 2016.09 v2.4.3 running Java 8",
+        "OptionSettings": [
+          {
+            "Namespace": "aws:autoscaling:asg",
+            "OptionName": "MinSize",
+            "Value": {
+              "Ref": "InstanceMinSize"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:asg",
+            "OptionName": "MaxSize",
+            "Value": {
+              "Ref": "InstanceMaxSize"
+            }
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:environment",
+            "OptionName": "EnvironmentType",
+            "Value": "LoadBalanced"
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "InstanceType",
+            "Value": {
+              "Ref": "InstanceType"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "EC2KeyName",
+            "Value": {
+              "Ref": "EC2KeyName"
+            }
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:application",
+            "OptionName": "Application Healthcheck URL",
+            "Value": {
+              "Ref": "AppHealthCheckURL"
+            }
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:application:environment",
+            "OptionName": "SPRING_PROFILES_ACTIVE",
+            "Value": "devaurora"
+          }
+        ]
+      }
+    },
+    "AppEnvironment": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "EBApplication"
+        },
+        "EnvironmentName": {
+          "Ref": "EnvironmentName"
+        },
+        "TemplateName": {
+          "Ref": "EBConfigurationTemplate"
+        },
+        "VersionLabel": {
+          "Ref": "EBApplicationVersion"
+        }
+      }
+    }
+  }
+}

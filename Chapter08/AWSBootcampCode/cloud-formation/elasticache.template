@@ -1,0 +1,135 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Create ElastiCache Stack",
+  "Resources": {
+    "AWSBootcampSecurityGroupForMemcached": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupName" : "aws-bootcamp-memcached-cache",
+        "GroupDescription": "Enable access via port 11211",
+        "SecurityGroupIngress": [{
+          "IpProtocol": "tcp",
+          "FromPort": "11211",
+          "ToPort": "11211",
+          "CidrIp": "0.0.0.0/0"
+        }]
+      }
+    },
+    "AWSBootcampCacheClusterForMemcached": {
+      "Type": "AWS::ElastiCache::CacheCluster",
+      "Properties": {
+        "ClusterName": "aws-bootcamp-m",
+        "Port": "11211",
+        "Engine": "memcached",
+        "CacheNodeType": "cache.t2.micro",
+        "NumCacheNodes": "2",
+        "AZMode": "single-az",
+        "VpcSecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "AWSBootcampSecurityGroupForMemcached", "GroupId"
+            ]
+          }
+        ],
+        "Tags": [{
+            "Key": "name",
+            "Value": "awsbootcamp-memcached"
+          }
+        ]
+      },
+      "DependsOn": [
+        "AWSBootcampSecurityGroupForMemcached"
+      ]
+    },
+    "AWSBootcampSecurityGroupForRedis": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupName" : "aws-bootcamp-redis",
+        "GroupDescription": "Enable access via port 6379",
+        "SecurityGroupIngress": [{
+          "IpProtocol": "tcp",
+          "FromPort": "6379",
+          "ToPort": "6379",
+          "CidrIp": "0.0.0.0/0"
+        }]
+      }
+    },
+    "AWSBootcampRedisSingleNode": {
+      "Type": "AWS::ElastiCache::CacheCluster",
+      "Properties": {
+        "ClusterName": "aws-bootcamp-redis",
+        "Port": "6379",
+        "Engine": "redis",
+        "EngineVersion": "3.2.10",
+        "CacheNodeType": "cache.t2.micro",
+        "NumCacheNodes": "1",
+        "AZMode": "single-az",
+        "VpcSecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "AWSBootcampSecurityGroupForRedis", "GroupId"
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "awsbootcamp-redis"
+          }
+        ]
+      },
+      "DependsOn": [
+        "AWSBootcampSecurityGroupForRedis"
+      ]
+    },
+    "AWSBootcampRedisClusterDisabled": {
+      "Type": "AWS::ElastiCache::ReplicationGroup",
+      "Properties": {
+        "ReplicationGroupId" : "aws-bootcamp-redis-1",
+        "ReplicationGroupDescription" : "AWS Bootcamp redis cluster disabled",
+        "NumCacheClusters" : 3,
+        "AutomaticFailoverEnabled": false,
+        "Engine" : "redis",
+        "EngineVersion" : "3.2.10",
+        "Port" : 6379,
+        "CacheParameterGroupName" : "default.redis3.2",
+        "CacheNodeType" : "cache.t2.micro",
+        "CacheSubnetGroupName" : "default",
+        "SecurityGroupIds" : [
+          "sg-2e5a905a"
+        ],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "awsbootcamp-redis"
+          }
+        ]
+      }
+    },
+    "AWSBootcampRedisClusterEnabled": {
+      "Type": "AWS::ElastiCache::ReplicationGroup",
+      "Properties": {
+        "ReplicationGroupId" : "aws-bootcamp-redis-2",
+        "ReplicationGroupDescription" : "AWS Bootcamp redis cluster enabled",
+        "Engine" : "redis",
+        "EngineVersion" : "3.2.10",
+        "Port" : 6379,
+        "CacheParameterGroupName" : "default.redis3.2.cluster.on",
+        "CacheSubnetGroupName" : "default",
+        "NumNodeGroups" : 2,
+        "ReplicasPerNodeGroup" : 2,
+        "AutomaticFailoverEnabled": true,
+        "CacheNodeType" : "cache.t2.micro",
+        "SecurityGroupIds" : [
+          "sg-2e5a905a"
+        ],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "awsbootcamp-redis"
+          }
+        ]
+      }
+    }
+  }
+}

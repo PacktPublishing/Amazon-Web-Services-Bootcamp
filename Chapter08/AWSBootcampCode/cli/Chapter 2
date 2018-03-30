@@ -1,0 +1,419 @@
+create-group
+Creates a new group.
+
+> Creates new group under your AWS account.
+
+create-group
+[--path <value>]
+--group-name <value>
+
+aws iam create-group --group-name "Developer" --path "/"
+
+-------------------------------------------------------------
+get-group
+Returns a list of IAM users that are in the specified IAM group. You can paginate the results using the MaxItems and Marker parameters.
+
+> Fetches the group details with list of IAM users added under this group.
+
+get-group
+--group-name <value>
+[--max-items <value>]
+[--cli-input-json <value>]
+[--starting-token <value>]
+[--page-size <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam get-group --group-name "Developer" --max-items 10 --page-size 5
+[--starting-token <value>]
+
+-------------------------------------------------------------
+attach-group-policy
+Attaches the specified managed policy to the specified IAM group.
+
+You use this API to attach a managed policy to a group. To embed an inline policy in a group, use put-group-policy .
+
+> Attaches the managed policy under the group
+
+attach-group-policy
+--group-name <value>
+--policy-arn <value>
+
+aws iam attach-group-policy --group-name "Developer" --policy-arn "arn:aws:iam::993735536778:policy/AmazonS3FullAccess"
+
+-------------------------------------------------------------
+list-attached-group-policies
+Lists all managed policies that are attached to the specified IAM group.
+
+An IAM group can also have inline policies embedded with it. To list the inline policies for a group, use the list-group-policies API. For information about policies, see Managed Policies and Inline Policies in the IAM User Guide .
+
+You can paginate the results using the MaxItems and Marker parameters. You can use the PathPrefix parameter to limit the list of policies to only those matching the specified path prefix. If there are no policies attached to the specified group (or none that match the specified path prefix), the action returns an empty list.
+
+> Fetches the list of managed policies being attached under the group.
+
+list-attached-group-policies
+--group-name <value>
+[--path-prefix <value>]
+[--max-items <value>]
+[--cli-input-json <value>]
+[--starting-token <value>]
+[--page-size <value>]
+[--generate-cli-skeleton <value>]
+
+
+aws iam list-attached-group-policies --group-name "Developer" --path-prefix "/" --max-items 10 --page-size 5
+[--starting-token <value>]
+
+-------------------------------------------------------------
+detach-group-policy
+Removes the specified managed policy from the specified IAM group.
+
+A group can also have inline policies embedded with it. To delete an inline policy, use the delete-group-policy API. For information about policies, see Managed Policies and Inline Policies in the IAM User Guide .
+
+> Detaches the managed policy from the group.
+
+detach-group-policy
+--group-name <value>
+--policy-arn <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam detach-group-policy --group-name "Developer" --policy-arn "arn:aws:iam::993735536778:policy/AmazonS3FullAccess"
+
+-------------------------------------------------------------
+put-group-policy
+Adds or updates an inline policy document that is embedded in the specified IAM group.
+
+A user can also have managed policies attached to it. To attach a managed policy to a group, use attach-group-policy . To create a new managed policy, use create-policy . For information about policies, see Managed Policies and Inline Policies in the IAM User Guide .
+
+> Add inline policy under the group. If same policy name is available under the group it will update it.
+
+  put-group-policy
+--group-name <value>
+--policy-name <value>
+--policy-document <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+
+aws iam put-group-policy --group-name "Developer" --policy-name "S3FullAccessOnMyBucket2" --policy-document file://newPolicyDocument.json
+
+-------------------------------------------------------------
+list-group-policies
+Lists the names of the inline policies that are embedded in the specified IAM group.
+
+You can paginate the results using the MaxItems and Marker parameters. If there are no inline policies embedded with the specified group, the action returns an empty list.
+
+> List the inline policy created under the group
+
+  list-group-policies
+--group-name <value>
+[--max-items <value>]
+[--cli-input-json <value>]
+[--starting-token <value>]
+[--page-size <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam list-group-policies --group-name "Developer" --max-items 10 --page-size 5
+[--starting-token <value>]
+
+-------------------------------------------------------------
+get-group-policy
+Retrieves the specified inline policy document that is embedded in the specified IAM group.
+An IAM group can also have managed policies attached to it. To retrieve a managed policy document that is attached to a group, use get-policy to determine the policy's default version, then use get-policy-version to retrieve the policy document.
+
+Note: Policies returned by this API are URL-encoded compliant with RFC 3986 . You can use a URL decoding method to convert the policy back to plain JSON text. For example, if you use Java, you can use the decode method of the java.net.URLDecoder utility class in the Java SDK. Other languages and SDKs provide similar functionality.
+
+> Fetches the details of inline policy created under the group.
+
+  get-group-policy
+--group-name <value>
+--policy-name <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+
+aws iam get-group-policy --group-name "Developer" --policy-name "S3FullAccessOnMyBucket2"
+
+-------------------------------------------------------------
+delete-group-policy
+Deletes the specified inline policy that is embedded in the specified IAM group.
+
+A group can also have managed policies attached to it. To detach a managed policy from a group, use detach-group-policy . For more information about policies, refer to Managed Policies and Inline Policies in the IAM User Guide .
+
+> Deletes the inline policy created under the group.
+
+delete-group-policy
+--group-name <value>
+--policy-name <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam delete-group-policy --group-name "Developer" --policy-name "S3FullAccessOnMyBucket2"
+
+-------------------------------------------------------------
+delete-group
+Deletes the specified IAM group. The group must not contain any users or have any attached policies.
+
+> Deletes the group from your AWS account. Before deleting group, all users added and policies attached should be removed.
+
+  delete-group
+--group-name <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+
+aws iam delete-group --group-name "Developer"
+
+-------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+create-user
+Creates a new IAM user for your AWS account.
+
+For information about limitations on the number of IAM users you can create, see Limitations on IAM Entities in the IAM User Guide .
+
+create-user
+[--path <value>]
+--user-name <value>
+
+aws iam create-user --user-name "Sunil" --path "/"
+
+-------------------------------------------------------------
+list-users
+Lists the IAM users that have the specified path prefix. If no path prefix is specified, the action returns all users in the AWS account. If there are none, the action returns an empty list.
+
+You can paginate the results using the MaxItems and Marker parameters.
+
+list-users
+[--path-prefix <value>]
+[--max-items <value>]
+[--cli-input-json <value>]
+[--starting-token <value>]
+[--page-size <value>]
+[--generate-cli-skeleton <value>]
+
+
+aws iam list-users --path-prefix "/" --max-items 10 --page-size 5
+[--starting-token <value>]
+
+-------------------------------------------------------------
+create-access-key
+Creates a new AWS secret access key and corresponding AWS access key ID for the specified user. The default status for new keys is Active .
+
+If you do not specify a user name, IAM determines the user name implicitly based on the AWS access key ID signing the request. Because this action works for access keys under the AWS account, you can use this action to manage root credentials even if the AWS account has no associated users.
+
+create-access-key
+[--user-name <value>]
+
+aws iam create-access-key --user-name "Sunil"
+
+This returns the Access Key Id and Secret Access Key. This should be saved on secured location.
+
+-------------------------------------------------------------
+list-access-keys
+Returns information about the access key IDs associated with the specified IAM user. If there are none, the action returns an empty list.
+
+Although each user is limited to a small number of keys, you can still paginate the results using the MaxItems and Marker parameters.
+
+If the UserName field is not specified, the UserName is determined implicitly based on the AWS access key ID used to sign the request. Because this action works for access keys under the AWS account, you can use this action to manage root credentials even if the AWS account has no associated users.
+
+list-access-keys
+[--user-name <value>]
+[--max-items <value>]
+[--cli-input-json <value>]
+[--starting-token <value>]
+[--page-size <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam list-access-keys --user-name "Sunil" --max-items 10 --page-size 5
+[--starting-token <value>]
+
+-------------------------------------------------------------
+delete-access-key
+Deletes the access key pair associated with the specified IAM user.
+
+If you do not specify a user name, IAM determines the user name implicitly based on the AWS access key ID signing the request. Because this action works for access keys under the AWS account, you can use this action to manage root credentials even if the AWS account has no associated users.
+
+delete-access-key
+[--user-name <value>]
+--access-key-id <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam delete-access-key --user-name "Sunil" --access-key-id "AKIAIQAZ2K5K5LOTHXTQ"
+
+-------------------------------------------------------------
+create-login-profile
+Creates a password for the specified user, giving the user the ability to access AWS services through the AWS Management Console. For more information about managing passwords, see Managing Passwords in the IAM User Guide .
+
+create-login-profile
+--user-name <value>
+--password <value>
+[--password-reset-required | --no-password-reset-required]
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam create-login-profile --user-name "Sunil" --password "abcd1234" --password-reset-required
+
+-------------------------------------------------------------
+get-login-profile
+Retrieves the user name and password-creation date for the specified IAM user. If the user has not been assigned a password, the action returns a 404 (NoSuchEntity ) error.
+
+get-login-profile
+--user-name <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam get-login-profile --user-name "Sunil"
+
+-------------------------------------------------------------
+delete-login-profile
+Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console.
+
+delete-login-profile
+--user-name <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam delete-login-profile --user-name "Sunil"
+
+-------------------------------------------------------------
+add-user-to-group
+Adds the specified user to the specified group.
+
+add-user-to-group
+--group-name <value>
+--user-name <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam add-user-to-group --user-name "Sunil" --group-name "Developer"
+
+-------------------------------------------------------------
+list-groups-for-user
+Lists the IAM groups that the specified IAM user belongs to.
+
+You can paginate the results using the MaxItems and Marker parameters.
+
+list-groups-for-user
+--user-name <value>
+[--max-items <value>]
+[--cli-input-json <value>]
+[--starting-token <value>]
+[--page-size <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam list-groups-for-user --user-name "Sunil" --max-items 10 --page-size 5
+[--starting-token <value>]
+
+-------------------------------------------------------------
+remove-user-from-group
+Removes the specified user from the specified group.
+
+remove-user-from-group
+--group-name <value>
+--user-name <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam remove-user-from-group --group-name "Developer" --user-name "Sunil"
+
+-------------------------------------------------------------
+attach-user-policy
+Attaches the specified managed policy to the specified user.
+
+You use this API to attach a managed policy to a user. To embed an inline policy in a user, use put-user-policy .
+
+attach-user-policy
+--user-name <value>
+--policy-arn <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam attach-user-policy --user-name "Sunil" --policy-arn "arn:aws:iam::993735536778:policy/AmazonS3FullAccess"
+
+-------------------------------------------------------------
+list-attached-user-policies
+Lists all managed policies that are attached to the specified IAM user.
+
+An IAM user can also have inline policies embedded with it. To list the inline policies for a user, use the list-user-policies API. For information about policies, see Managed Policies and Inline Policies in the IAM User Guide .
+
+You can paginate the results using the MaxItems and Marker parameters. You can use the PathPrefix parameter to limit the list of policies to only those matching the specified path prefix. If there are no policies attached to the specified group (or none that match the specified path prefix), the action returns an empty list.
+
+list-attached-user-policies
+--user-name <value>
+[--path-prefix <value>]
+[--max-items <value>]
+[--cli-input-json <value>]
+[--starting-token <value>]
+[--page-size <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam list-attached-user-policies --user-name "Sunil" --path-prefix "/" --max-items 10 --page-size 5
+[--starting-token <value>]
+
+-------------------------------------------------------------
+detach-user-policy
+Removes the specified managed policy from the specified user.
+
+A user can also have inline policies embedded with it. To delete an inline policy, use the delete-user-policy API. For information about policies, see Managed Policies and Inline Policies in the IAM User Guide .
+
+ detach-user-policy
+--user-name <value>
+--policy-arn <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam detach-user-policy --user-name "Sunil" --policy-arn "arn:aws:iam::993735536778:policy/AmazonS3FullAccess"
+
+-------------------------------------------------------------
+delete-user
+Deletes the specified IAM user. The user must not belong to any groups or have any access keys, signing certificates, or attached policies.
+
+delete-user
+--user-name <value>
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+aws iam delete-user --user-name "Sunil"
+
+-------------------------------------------------------------
+
+
+
+-------------------------------------------------------------
+
+
+
+-------------------------------------------------------------
+
+
+
+-------------------------------------------------------------
+
+
+
+-------------------------------------------------------------
+
+
+
+-------------------------------------------------------------
+
+
+
+-------------------------------------------------------------

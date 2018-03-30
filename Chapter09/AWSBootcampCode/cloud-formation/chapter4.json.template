@@ -1,0 +1,21 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "S3 Stack",
+  "Resources" : {
+    "AWSBootcampPacktS3Bucket": {
+      "Type" : "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties" : {
+        "AccessControl" : "BucketOwnerFullControl",
+        "BucketName" : "aws-bootcamp-packt-3",
+        "Tags" : [{
+          "Key" : "Chapter",
+          "Value" : "4"
+        }],
+        "VersioningConfiguration": {
+          "Status" : "Suspended"
+        }
+      }
+    }
+  }
+}

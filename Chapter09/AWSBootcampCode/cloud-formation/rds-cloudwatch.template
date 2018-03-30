@@ -1,0 +1,37 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "Cloudwatch for AWS Bootcamp",
+
+  "Resources" : {
+    "AWSBootcampRDSHighCPUUtilization": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName" : "AWS-Bootcamp-RDS-High-CPU-Utilization",
+        "AlarmDescription": "AWS Bootcamp RDS High CPU Utilization Alarm",
+        "AlarmActions": [
+          "arn:aws:sns:us-east-1:993735536778:aws-bootcamp"
+        ],
+        "Dimensions": [{
+          "Name": "DBInstanceIdentifier",
+          "Value": "awsbootcamp"
+        }],
+        "Namespace": "AWS/RDS",
+        "MetricName": "CPUUtilization",
+        "Statistic": "Average",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Threshold": "80.0",
+        "Unit": "Percent",
+        "EvaluationPeriods": 2,
+        "Period": 300
+      }
+    },
+    "RDSCPUDashboard": {
+      "Type": "AWS::CloudWatch::Dashboard",
+      "Properties": {
+        "DashboardName": "AWS-Bootcamp-RDS-CPU-Dashboard",
+        "DashboardBody": "{\"widgets\":[{\"type\":\"metric\",\"x\":0,\"y\":0,\"width\":12,\"height\":6,\"properties\":{\"metrics\":[[\"AWS/RDS\",\"CPUUtilization\",\"DBInstanceIdentifier\",\"awsbootcamp\"]],\"period\":300,\"stat\":\"Average\",\"region\":\"us-east-1\",\"title\":\"RDS Instance CPU\"}},{\"type\":\"metric\",\"x\":0,\"y\":7,\"width\":12,\"height\":6,\"properties\":{\"metrics\":[[\"AWS/RDS\",\"DatabaseConnections\",\"DBInstanceIdentifier\",\"awsbootcamp\"]],\"period\":300,\"stat\":\"Average\",\"region\":\"us-east-1\",\"title\":\"RDS Database Connections\"}}]}"
+      }
+    }
+  }
+}

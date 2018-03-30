@@ -1,0 +1,88 @@
+http://docs.aws.amazon.com/cli/latest/reference/ec2/
+
+aws ec2 create-key-pair --key-name "aws-bootcamp"
+
+aws ec2 create-security-group --group-name "aws-bootcamp" --description "Security Group for AWS Bootcamp"
+
+aws ec2 create-security-group --group-name "aws-bootcamp-1" --description "Security Group for AWS Bootcamp" --vpc-id "vpc-a1cbefd8"
+
+aws ec2 authorize-security-group-ingress --group-id "sg-f529f186" --protocol "tcp" --port 22 --cidr "0.0.0.0/0"
+
+aws ec2 authorize-security-group-ingress --group-name "aws-bootcamp" --protocol "tcp" --port 22 --cidr "0.0.0.0/0"
+
+aws ec2 authorize-security-group-ingress --group-name "aws-bootcamp" --ip-permissions "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=0.0.0.0/0},{CidrIp=10.0.0.0/24}]"
+
+aws ec2 authorize-security-group-ingress --group-name "aws-bootcamp" --protocol "tcp" --port 22 --source-group "default"
+
+aws ec2 authorize-security-group-ingress --group-name "aws-bootcamp" --protocol "tcp" --port 22 --source-group "default" --group-owner "993735536778"
+
+protocol parameter should be one of: tcp|udp|icmp|all or any valid protocol number.
+
+aws ec2 run-instances --image-id "ami-c998b6b2" --instance-type "t2.micro" --count 1 --no-associate-public-ip-address --key-name "aws-bootcamp" --security-group-ids "sg-7c6ecf0f" --user-data file://userData.txt
+
+
+        [--block-device-mappings <value>]
+        [--ipv6-address-count <value>]
+        [--ipv6-addresses <value>]
+        [--kernel-id <value>]
+        [--monitoring <value>]
+        [--placement <value>]
+        [--ramdisk-id <value>]
+
+        [--security-groups <value>]
+
+        [--additional-info <value>]
+        [--client-token <value>]
+        [--disable-api-termination | --enable-api-termination]
+        [--ebs-optimized | --no-ebs-optimized]
+
+        [--network-interfaces <value>]
+
+        [--private-ip-address <value>]
+
+        [--elastic-gpu-specification <value>]
+
+        [--tag-specifications <value>]
+
+        [--secondary-private-ip-addresses <value>]
+
+        [--secondary-private-ip-address-count <value>]
+
+aws elb create-load-balancer --load-balancer-name "AWS-Bootcamp" --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --availability-zones "us-east-1d" --security-groups "sg-7c6ecf0f" --tags "Key=Name,Value=AWS-Bootcamp"
+--load-balancer-name <value>
+--listeners <value>
+[--availability-zones <value>]
+[--subnets <value>]
+[--security-groups <value>]
+[--scheme <value>]
+[--tags <value>]
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
+
+
+aws elb create-load-balancer-listeners --load-balancer-name "AWS-Bootcamp" --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80"
+
+aws elb configure-health-check --load-balancer-name "AWS-Bootcamp" --health-check "Target=TCP:80,Interval=30,Timeout=5,UnhealthyThreshold=2,HealthyThreshold=2"
+
+
+aws elb register-instances-with-load-balancer --load-balancer-name "AWS-Bootcamp" --instances "i-00021afadb836cb96"
+
+Install httpd on linux: http://www.thatislinux.com/how-to-install-apache-webserver/#.Wc5TRWiCzIU
+yum install httpd -y
+service httpd start
+
+------------------------------------------------------------------------------------------------------
+aws autoscaling create-launch-configuration --launch-configuration-name "AWS-Bootcamp" --image-id "ami-c998b6b2" --key-name "aws-bootcamp" --security-groups "sg-7c6ecf0f" --instance-type "t2.micro" --associate-public-ip-address --block-device-mappings "[{\"DeviceName\": \"/dev/sda1\",\"Ebs\":{\"VolumeSize\":10}}]"
+
+aws autoscaling create-auto-scaling-group --auto-scaling-group-name "AWS-Bootcamp" --launch-configuration-name "AWS-Bootcamp" --desired-capacity 2 --min-size 2 --max-size 4 --default-cooldown 300 --vpc-zone-identifier "subnet-ec8ecfb6,subnet-3c985558,subnet-972769bb" --health-check-type EC2 --health-check-grace-period 300 --no-new-instances-protected-from-scale-in --tags Key=Name,Value=AWS-Bootcamp,PropagateAtLaunch=true
+
+Scale-In
+aws autoscaling put-scaling-policy --auto-scaling-group-name "AWS-Bootcamp" --policy-name "Increase Group Size" --policy-type "SimpleScaling" --adjustment-type "ChangeInCapacity" --scaling-adjustment 1 --cooldown 300
+
+aws cloudwatch put-metric-alarm --alarm-name "IncreaseGroupSize-AWS-Bootcamp" --alarm-description "Alarm for Increase Group Size" --actions-enabled --dimensions Name=AutoScalingGroupName,Value=AWS-Bootcamp --namespace "AWS/EC2" --metric-name "CPUUtilization" --statistic "Average" --comparison-operator "GreaterThanOrEqualToThreshold" --threshold 80.0 --unit "Percent" --evaluation-periods 2 --period 300 --alarm-actions "arn:aws:autoscaling:us-east-1:993735536778:scalingPolicy:f92ad81a-32ed-4dac-adc3-95c6eafeebec:autoScalingGroupName/AWS-Bootcamp:policyName/Increase Group Size"
+
+Scale-Out
+aws autoscaling put-scaling-policy --auto-scaling-group-name "AWS-Bootcamp" --policy-name "Decrease Group Size" --policy-type "SimpleScaling" --adjustment-type "ChangeInCapacity" --scaling-adjustment -1 --cooldown 300
+
+aws cloudwatch put-metric-alarm --alarm-name "DecreaseGroupSize-AWS-Bootcamp" --alarm-description "Alarm for Decrease Group Size" --actions-enabled --dimensions Name=AutoScalingGroupName,Value=AWS-Bootcamp --namespace "AWS/EC2" --metric-name "CPUUtilization" --statistic "Average" --comparison-operator "LessThanOrEqualToThreshold" --threshold 40.0 --unit "Percent" --evaluation-periods 2 --period 300 --alarm-actions "arn:aws:autoscaling:us-east-1:993735536778:scalingPolicy:524e5c2a-837f-47d3-8b48-88291d6c6db3:autoScalingGroupName/AWS-Bootcamp:policyName/Decrease Group Size"
+
