@@ -15,16 +15,28 @@ All the codes are arranged chapter wise,
 
 The code will look like the following:
 
-aws elb create-load-balancer --load-balancer-name "AWS-Bootcamp" --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --availability-zones "us-east-1d" --security-groups "sg-7c6ecf0f" --tags "Key=Name,Value=AWS-Bootcamp"
+aws elb create-load-balancer --load-balancer-name "AWS-Bootcamp" --listeners
+"Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --availability-zones "us-east-1d" --security-groups
+"sg-7c6ecf0f" --tags "Key=Name,Value=AWS-Bootcamp"
+
 --load-balancer-name <value>
+  
 --listeners <value>
+  
 [--availability-zones <value>]
+  
 [--subnets <value>]
+  
 [--security-groups <value>]
+  
 [--scheme <value>]
+  
 [--tags <value>]
+  
 [--cli-input-json <value>]
+  
 [--generate-cli-skeleton <value>]
+  
 
 
 
