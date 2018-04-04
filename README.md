@@ -15,15 +15,16 @@ All the codes are arranged chapter wise,
 
 The code will look like the following:
 
-<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-</plugin>
+aws elb create-load-balancer --load-balancer-name "AWS-Bootcamp" --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --availability-zones "us-east-1d" --security-groups "sg-7c6ecf0f" --tags "Key=Name,Value=AWS-Bootcamp"
+--load-balancer-name <value>
+--listeners <value>
+[--availability-zones <value>]
+[--subnets <value>]
+[--security-groups <value>]
+[--scheme <value>]
+[--tags <value>]
+[--cli-input-json <value>]
+[--generate-cli-skeleton <value>]
 
 
 
