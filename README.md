@@ -41,8 +41,8 @@ aws elb create-load-balancer --load-balancer-name "AWS-Bootcamp" --listeners
 
 
 ## Related Products
-* [VMware vSphere 6.5 Cookbook - Third Edition](https://www.packtpub.com/virtualization-and-cloud/vmware-vsphere-65-cookbook-third-edition)
+* [Practical AWS Networking](https://www.packtpub.com/virtualization-and-cloud/practical-aws-networking)
 
-* [Learning VMware NSX - Second Edition](https://www.packtpub.com/virtualization-and-cloud/learning-vmware-nsx-second-edition)
+* [AWS Automation Cookbook](https://www.packtpub.com/virtualization-and-cloud/aws-automation-cookbook)
 
-* [Mastering VMware vSphere 6.5](https://www.packtpub.com/virtualization-and-cloud/mastering-vmware-vsphere-65)
+* [Expert AWS Development](https://www.packtpub.com/virtualization-and-cloud/expert-aws-development)
