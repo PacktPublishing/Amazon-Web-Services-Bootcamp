@@ -46,3 +46,7 @@ aws elb create-load-balancer --load-balancer-name "AWS-Bootcamp" --listeners
 * [AWS Automation Cookbook](https://www.packtpub.com/virtualization-and-cloud/aws-automation-cookbook)
 
 * [Expert AWS Development](https://www.packtpub.com/virtualization-and-cloud/expert-aws-development)
+### Download a free PDF
+
+ <i>If you have already purchased a print or Kindle version of this book, you can get a DRM-free PDF version at no cost.<br>Simply click on the link to claim your free PDF.</i>
+<p align="center"> <a href="https://packt.link/free-ebook/9781788294454">https://packt.link/free-ebook/9781788294454 </a> </p>
